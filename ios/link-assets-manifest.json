@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/icons/login.png",
+      "sha1": "8b510a0663c5e576910c54a4d88ea11646526a36"
+    },
+    {
+      "path": "assets/fonts/PTSansCaptionRegular.ttf",
+      "sha1": "16591fc0e814fc1e2033e982e49f189a5bb49824"
+    },
+    {
+      "path": "assets/fonts/PTSansRegular.ttf",
+      "sha1": "641626d5d6a625a1e46e09ceb806cf33d1c1867e"
+    }
+  ]
+}
