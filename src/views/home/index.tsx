@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   Button,
+  ScrollView,
   StyleSheet,
   Text,
   useColorScheme,
@@ -13,6 +14,8 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { useAppContext } from '../../context';
 import { Routes } from '../routes';
+import API from '../../api';
+import { User } from '../../model';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -40,17 +43,33 @@ function Section({ children, title }: SectionProps): React.JSX.Element {
 
 function Home({ navigation }: { navigation: any }): React.JSX.Element {
   const context = useAppContext();
+  const api = API.getInstance();
+  const [users, setUsers] = useState<User[]>([]);
 
   const handlerLogout = () => {
     context.logout();
     navigation.replace(Routes.LOGIN, { isLogoutByUser: true });
   }
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const users = await api.getUsers();
+      setUsers(users);
+    }
+    fetchUsers();
+  })
+
   return <>
     <Section title="Informações do usuário">
-      Usuário <Text style={styles.highlight}>{context.state.username}</Text>
+      Você está logado como <Text style={styles.highlight}>{context.state.username}</Text>
     </Section>
     <Button title='Logout' onPress={handlerLogout} />
+    <Section title="Lista de usuários" />
+    <ScrollView>
+      {users.map((user, index) => {
+        return <Text key={index}>{user.name} - {user.email}</Text>
+      })}
+    </ScrollView>
   </>
 }
 
