@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   Button,
-  Image,
   StyleSheet,
   Text,
-  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
@@ -13,7 +11,8 @@ import {
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
-import { useAppContext, Provider } from '../../context';
+import { useAppContext } from '../../context';
+import { Routes } from '../routes';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -39,26 +38,19 @@ function Section({ children, title }: SectionProps): React.JSX.Element {
   );
 }
 
-function Home(): React.JSX.Element {
+function Home({ navigation }: { navigation: any }): React.JSX.Element {
   const context = useAppContext();
-  const [username, setUsername] = useState<string | undefined>(undefined);
 
-  const handleLogin = () => {
-    if (username) {
-      context.login(username);
-    }
+  const handlerLogout = () => {
+    context.logout();
+    navigation.replace(Routes.LOGIN, { isLogoutByUser: true });
   }
 
   return <>
-    <Provider>
-      <Section title="Informações do usuário">
-        Usuário <Text style={styles.highlight}>{context.state.username}</Text>
-      </Section>
-      <Image source={require('../../../assets/icons/login.png')} />
-      <TextInput style={styles.inputText} placeholder='Digite seu nome' onChangeText={setUsername} value={username} />
-      <Button title='Login' onPress={handleLogin} />
-      <Button title='Logout' onPress={context.logout} />
-    </Provider>
+    <Section title="Informações do usuário">
+      Usuário <Text style={styles.highlight}>{context.state.username}</Text>
+    </Section>
+    <Button title='Logout' onPress={handlerLogout} />
   </>
 }
 
