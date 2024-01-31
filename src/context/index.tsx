@@ -1,7 +1,7 @@
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 import API from "../api";
 import { User } from "../model";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type AppState = {
   username?: string;
@@ -10,6 +10,7 @@ type AppState = {
 
 interface ContextData {
   state: AppState;
+  initialize: () => Promise<AppState | null>;
   login: (login: string) => Promise<User | null | undefined>;
   logout: () => void;
 }
@@ -20,30 +21,55 @@ export const Provider: React.FC<PropsWithChildren> = ({ children }) => {
   const [state, setAppState] = useState<AppState>({ isAuth: false });
   const api = API.getInstance();
 
+  const initialize = async (): Promise<AppState | null> => {
+    var state = await loadFromStorage();
+    if (state) {
+      setAppState(state);
+    }
+    return state;
+  }
+
+  const remoteStorage = async () => {
+    await AsyncStorage.removeItem('appState');
+  }
+
+  const saveToStorage = async (state: AppState) => {
+    await AsyncStorage.setItem('appState', JSON.stringify(state));
+  }
+
+  const loadFromStorage = async (): Promise<AppState | null> => {
+    const item = await AsyncStorage.getItem('appState');
+    return item ? JSON.parse(item) : null;
+  }
 
   const login = async (login: string) => {
     var user = await api.login(login);
+    var newState = {
+      username: login,
+      isAuth: true
+    };
     if (user) {
       setAppState(prevState => ({
         ...prevState,
-        username: login,
-        isAuth: true
+        ...newState
       }));
+      await saveToStorage(newState);
       return user;
     }
     return null;
   }
 
-  const logout = () => {
+  const logout = async () => {
     setAppState(prevState => ({
       ...prevState,
       username: undefined,
       isAuth: false
     }));
+    await remoteStorage();
   }
 
   return (
-    <Context.Provider value={{ state, login, logout }}>
+    <Context.Provider value={{ state, initialize, login, logout }}>
       {children}
     </Context.Provider>
   )

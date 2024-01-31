@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  AppState,
   Button,
   Image,
   StyleSheet,
@@ -16,7 +17,6 @@ function Login({ route, navigation }: { route: any, navigation: any }): React.JS
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
-
   const handleLogin = async () => {
     if (username) {
       var user = await context.login(username);
@@ -27,6 +27,14 @@ function Login({ route, navigation }: { route: any, navigation: any }): React.JS
       }
     }
   }
+
+  useEffect(() => {
+    context.initialize().then((state) => {
+      if (state?.isAuth) {
+        navigation.replace(Routes.HOME);
+      }
+    });
+  }, [])
 
   return <>
     <View>
