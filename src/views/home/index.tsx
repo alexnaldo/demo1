@@ -16,6 +16,7 @@ import { useAppContext } from '../../context';
 import { Routes } from '../routes';
 import API from '../../api';
 import { User } from '../../model';
+import { useIsFocused } from '@react-navigation/native';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -45,6 +46,7 @@ function Home({ navigation }: { navigation: any }): React.JSX.Element {
   const context = useAppContext();
   const api = API.getInstance();
   const [users, setUsers] = useState<User[]>([]);
+  const isFocused = useIsFocused();
 
   const handlerLogout = () => {
     context.logout();
@@ -57,7 +59,7 @@ function Home({ navigation }: { navigation: any }): React.JSX.Element {
       setUsers(users);
     }
     fetchUsers();
-  })
+  }, [isFocused])
 
   return <>
     <Section title="Informações do usuário">
@@ -70,6 +72,7 @@ function Home({ navigation }: { navigation: any }): React.JSX.Element {
         return <Text key={index}>{user.name} - {user.email}</Text>
       })}
     </ScrollView>
+    <Button title='Adicionar usuário' onPress={() => navigation.navigate(Routes.ADD_USER)} />
   </>
 }
 

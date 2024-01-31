@@ -25,6 +25,11 @@ class API {
     const user = users.find(user => user.name === username);
     return user;
   }
+
+  async addUser(user: User): Promise<User | null | undefined> {
+    const response = await axios.post(`${BASE_URL}/users`, user);
+    return response.data;
+  }
 }
 
 export default API;
