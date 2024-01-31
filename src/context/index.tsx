@@ -1,4 +1,6 @@
 import { PropsWithChildren, createContext, useContext, useState } from "react";
+import API from "../api";
+import { User } from "../model";
 
 
 type AppState = {
@@ -8,7 +10,7 @@ type AppState = {
 
 interface ContextData {
   state: AppState;
-  login: (login: string) => void;
+  login: (login: string) => Promise<User | null | undefined>;
   logout: () => void;
 }
 
@@ -16,13 +18,20 @@ const Context = createContext<ContextData | undefined>(undefined);
 
 export const Provider: React.FC<PropsWithChildren> = ({ children }) => {
   const [state, setAppState] = useState<AppState>({ isAuth: false });
+  const api = API.getInstance();
 
-  const login = (login: string) => {
-    setAppState(prevState => ({
-      ...prevState,
-      username: login,
-      isAuth: true
-    }));
+
+  const login = async (login: string) => {
+    var user = await api.login(login);
+    if (user) {
+      setAppState(prevState => ({
+        ...prevState,
+        username: login,
+        isAuth: true
+      }));
+      return user;
+    }
+    return null;
   }
 
   const logout = () => {

@@ -14,12 +14,17 @@ import { Routes } from '../routes';
 function Login({ route, navigation }: { route: any, navigation: any }): React.JSX.Element {
   const context = useAppContext();
   const [username, setUsername] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
 
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (username) {
-      context.login(username);
-      navigation.replace(Routes.HOME);
+      var user = await context.login(username);
+      if (user) {
+        navigation.replace(Routes.HOME);
+      } else {
+        setError('Usuário não encontrado');
+      }
     }
   }
 
@@ -28,6 +33,7 @@ function Login({ route, navigation }: { route: any, navigation: any }): React.JS
       <Image source={require('../../../assets/icons/login.png')} />
       <Text>Login</Text>
       <TextInput style={styles.inputText} placeholder='Digite seu nome' onChangeText={setUsername} value={username} />
+      <Text style={styles.errorMessage}>{error}</Text>
       <Button title='Login' onPress={handleLogin} />
       <Text>Last logout {route.params?.isLogoutByUser ? 'by User' : 'by App'}</Text>
     </View>
@@ -40,6 +46,9 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     margin: 10
+  },
+  errorMessage: {
+    color: 'red'
   }
 });
 
