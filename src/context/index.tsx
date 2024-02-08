@@ -30,15 +30,15 @@ export const Provider: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   const remoteStorage = async () => {
-    await AsyncStorage.removeItem('appState');
+    await AsyncStorage?.removeItem('appState');
   }
 
   const saveToStorage = async (state: AppState) => {
-    await AsyncStorage.setItem('appState', JSON.stringify(state));
+    await AsyncStorage?.setItem('appState', JSON.stringify(state));
   }
 
   const loadFromStorage = async (): Promise<AppState | null> => {
-    const item = await AsyncStorage.getItem('appState');
+    const item = await AsyncStorage?.getItem('appState');
     return item ? JSON.parse(item) : null;
   }
 
